@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Device Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 350px;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Connect to Network Device</h1>
+    <form id="deviceForm" method="post">
+        <label for="device_type">Device Type:</label>
+        <select id="device_type" name="device_type" required>
+            <option value="cisco_ios">Cisco IOS</option>
+            <option value="cisco_ios_xe">Cisco IOS XE</option>
+            <option value="cisco_nxos">Cisco NX-OS</option>
+            <option value="arista_eos">Arista EOS</option>
+            <option value="juniper">Juniper</option>
+        </select><br><br>
+
+        <label for="host">Device IP:</label>
+        <input type="text" id="host" name="host" required><br><br>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="command">Command:</label>
+        <input type="text" id="command" name="command" required><br><br> <!-- New command field -->
+
+        <button type="button" onclick="submitForm()">Connect and Fetch Output</button>
+        <button type="button" onclick="clearFields()">Clear Fields</button> <!-- Clear Fields button -->
+    </form>
+
+    <h2>Command Output</h2>
+    <textarea id="output" readonly></textarea>
+
+    <script>
+        async function submitForm() {
+            const form = document.getElementById('deviceForm');
+            const formData = new FormData(form);
+
+            const response = await fetch('/connect', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+            const outputBox = document.getElementById('output');
+
+            if (result.status === 'success') {
+                outputBox.value = result.output;
+            } else {
+                outputBox.value = `Error: ${result.message}`;
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('deviceForm').reset();  // Reset the form fields
+            document.getElementById('output').value = '';  // Clear the output field
+        }
+    </script>
+</body>
+</html>

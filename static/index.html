@@ -1,174 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Favicon for the website -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Meta tags for character set and responsive design -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Looking Glass</title>
-    <style>
-        /* Basic Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css">
 
-        .logo-container {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo-container img {
-            max-width: 400px;
-            height: auto;
-        }
-
-        .container {
-            background-color: #1f1f1f;
-            border-radius: 10px;
-            padding: 30px;
-            width: 50vw;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #fff;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
-            color: #bbb;
-        }
-
-        input, select, button, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #333;
-            border-radius: 6px;
-            background-color: #262626;
-            color: #fff;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #026225;
-        }
-
-        button {
-            background-color: #026225;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #097934;
-        }
-
-        button:active {
-            background-color: #097934;
-        }
-
-        textarea {
-            height: 300px;
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-            background-color: #333;
-            color: #f1f1f1;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .button-container button {
-            width: 48%;
-        }
-
-    </style>
+    <!-- Title of the webpage -->
+    <title>Nucor - Cisco Terminal</title>
 </head>
 <body>
-    <!-- Nucor Logo Section -->
+    <!-- Logo Section at the top of the page -->
     <div class="logo-container">
-        <img src="nucor_logo.png" alt="Nucor Logo">
+        <img src="nucor_logo.png" alt="Nucor Logo"> <!-- Displays the Nucor logo -->
     </div>
 
-    <!-- Main Content Section -->
+    <!-- Terminal-like container for the application -->
     <div class="container">
-        <h1>Connect to Network Device</h1>
-        <form id="deviceForm" method="post">
-            <label for="device_type">Device Type:</label>
-            <select id="device_type" name="device_type" required>
-                <option value="cisco_ios">Cisco IOS</option>
-                <option value="cisco_ios_xe">Cisco IOS XE</option>
-                <option value="cisco_nxos">Cisco NX-OS</option>
-                <option value="arista_eos">Arista EOS</option>
-                <option value="juniper">Juniper</option>
-            </select>
+        <!-- Favicon in the top-left corner of the terminal window -->
+        <img class="favicon" src="favicon.ico" alt="Favicon">
 
-            <label for="host">Device IP:</label>
-            <input type="text" id="host" name="host" required>
+        <!-- Terminal control buttons (close, minimize, maximize) -->
+        <div class="terminal-buttons">
+            <span class="button close"></span> <!-- Red close button -->
+            <span class="button minimize"></span> <!-- Yellow minimize button -->
+            <span class="button maximize"></span> <!-- Green maximize button -->
+        </div>
+    
+        <!-- Main area for the terminal -->
+        <div class="terminal-body">
+            <!-- Area where prompts and outputs are displayed -->
+            <div id="output-area"></div>
 
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+            <!-- Hidden label for accessibility (for screen readers) -->
+            <label for="command-line" class="sr-only">Command Line</label>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-
-            <label for="command">Command:</label>
-            <input type="text" id="command" name="command" required>
-
-            <div class="button-container">
-                <button type="button" onclick="submitForm()">Connect and Fetch Output</button>
-                <button type="button" onclick="clearFields()">Clear Fields</button>
-            </div>
-        </form>
-
-        <h2>Command Output</h2>
-        <textarea id="output" readonly></textarea>
+            <!-- Input field where the user types commands -->
+            <input id="command-line" type="text" placeholder="Type here and press Enter..." autocomplete="off">
+        </div>
     </div>
 
+    <!-- JavaScript functionality for the terminal -->
     <script>
-        async function submitForm() {
-            const form = document.getElementById('deviceForm');
-            const formData = new FormData(form);
+        // Reference to the output display area and command line input
+        const outputArea = document.getElementById('output-area');
+        const commandLine = document.getElementById('command-line');
 
-            const response = await fetch('/connect', {
-                method: 'POST',
-                body: formData,
-            });
+        // Tracks the current step in the authentication process
+        let currentStep = 0;
+        // Stores the user input for authentication
+        const authData = {};
 
-            const result = await response.json();
-            const outputBox = document.getElementById('output');
+        // Steps in the authentication process
+        const steps = [
+            { prompt: 'Enter Device Type (e.g., cisco_ios, juniper):', key: 'device_type', showOptions: true, options: ['cisco_ios', 'juniper', 'arista_eos', 'cisco_nxos'] },
+            { prompt: 'Enter Device IP Address:', key: 'host' },
+            { prompt: 'Enter Username:', key: 'username' },
+            { prompt: 'Enter Password:', key: 'password', isSensitive: true },
+            { prompt: 'Enter Command to Execute:', key: 'command' }
+        ];
 
-            if (result.status === 'success') {
-                outputBox.value = result.output;
-            } else {
-                outputBox.value = `Error: ${result.message}`;
+        // Function to process the user input and move to the next step
+        function handleCommand(input) {
+            const step = steps[currentStep]; // Get the current step
+
+            // Validate input and move forward if valid
+            if (currentStep < steps.length) {
+                if (input.trim() === '' && !step.isSensitive) {
+                    appendOutput('Error: Input cannot be empty.'); // Error message for empty input
+                    return;
+                }
+
+                // Store user input for the current step
+                if (step.key) {
+                    authData[step.key] = input.trim();
+                }
+
+                // Display user input in the terminal
+                appendOutput(`> ${step.isSensitive ? '***' : input}`);
+
+                // Move to the next step
+                currentStep++;
+
+                // Display the next prompt if there are more steps
+                if (currentStep < steps.length) {
+                    const nextStep = steps[currentStep];
+                    appendOutput(nextStep.prompt); // Show the next prompt
+                    if (nextStep.showOptions) {
+                        appendOutput(`Options: ${nextStep.options.join(', ')}`); // Display options for selection
+                    }
+                } else {
+                    // End of the process
+                    appendOutput('Authentication Complete. You may now execute commands.');
+                }
             }
         }
 
-        function clearFields() {
-            document.getElementById('deviceForm').reset();  // Reset the form fields
-            document.getElementById('output').value = '';  // Clear the output field
+        // Function to append messages and outputs to the terminal
+        function appendOutput(text) {
+            const line = document.createElement('div'); // Create a new line in the terminal
+            line.textContent = text; // Set the text content
+            outputArea.appendChild(line); // Add the line to the output area
+            outputArea.scrollTop = outputArea.scrollHeight; // Scroll to the bottom
+        }
+
+        // Event listener for when the user presses Enter
+        commandLine.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') { // Check if the Enter key is pressed
+                const input = commandLine.value; // Get the user input
+                commandLine.value = ''; // Clear the input field
+                handleCommand(input); // Process the input
+            }
+        });
+
+        // Initialize the terminal with the first prompt
+        appendOutput(steps[currentStep].prompt.trim()); // Display the first prompt
+        if (steps[currentStep].showOptions) {
+            appendOutput(`Options: ${steps[currentStep].options.join(', ')}`); // Display options for the first step
         }
     </script>
 </body>

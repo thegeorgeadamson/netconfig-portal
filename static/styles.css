@@ -1,0 +1,166 @@
+/* Basic Reset */
+/* Resetting margins, paddings, and box-sizing for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Styling for the body to create a terminal-like look */
+body {
+    font-family: 'Arial', sans-serif; /* Default font */
+    background-color: #000000; /* Black background for terminal */
+    color: #e0e0e0; /* Light text color */
+    display: flex; /* Center container vertically and horizontally */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Full viewport height */
+}
+
+/* Styling for the Nucor logo section */
+.logo-container {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px; /* Space below the logo */
+}
+
+.logo-container img {
+    max-width: 25vw; /* Responsive width for the logo */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* Main container styling */
+.container {
+    background-color: #1e1e1e; /* Dark gray background */
+    border-radius: 10px; /* Rounded corners */
+    width: 60%; /* Width relative to viewport */
+    padding: 20px; /* Inner padding */
+    box-shadow: 0 0 30px rgba(2, 98, 37, 0.8); /* Green glow effect */
+    overflow: hidden; /* Prevent content overflow */
+    position: relative; /* Positioning for child elements */
+}
+
+/* Terminal buttons in the top-right corner */
+.terminal-buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px; /* Spacing between buttons */
+}
+
+/* Styling for individual terminal buttons */
+.terminal-buttons .button {
+    width: 12px; /* Button size */
+    height: 12px;
+    border-radius: 50%; /* Circular buttons */
+}
+
+/* Close button (red) */
+.terminal-buttons .button.close {
+    background-color: #ff5f57;
+}
+
+/* Minimize button (yellow) */
+.terminal-buttons .button.minimize {
+    background-color: #ffbd2e;
+}
+
+/* Maximize button (green) */
+.terminal-buttons .button.maximize {
+    background-color: #28c840;
+}
+
+/* Favicon positioned in the top-left corner */
+.favicon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 16px; /* Small icon size */
+    height: 16px;
+}
+
+/* Terminal body styling */
+.terminal-body {
+    padding: 20px; /* Inner padding */
+    color: #e0e0e0; /* Light text color */
+    font-family: 'Courier New', monospace; /* Monospace font for terminal look */
+}
+
+/* Styling for command labels (used for accessibility) */
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px; /* Space below the label */
+    color: #bbb; /* Light gray text */
+}
+
+/* General styling for input, select, button, and textarea elements */
+input, select, button, textarea {
+    width: 100%; /* Full width */
+    padding: 12px; /* Inner padding */
+    margin-bottom: 15px; /* Space below each element */
+    border: 1px solid #333; /* Dark border */
+    border-radius: 6px; /* Rounded corners */
+    background-color: #262626; /* Dark background */
+    color: #fff; /* Light text */
+    font-family: 'Courier New', monospace; /* Monospace font */
+}
+
+/* Focus styles for input, select, and textarea elements */
+input:focus, select:focus, textarea:focus {
+    outline: none; /* Remove default outline */
+    border-color: #026225; /* Green border on focus */
+}
+
+/* Button styling */
+button {
+    background-color: #444; /* Dark background */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 14px; /* Font size */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+    border: 1px solid #555; /* Border color */
+    padding: 10px; /* Inner padding */
+    color: #fff; /* Light text */
+}
+
+/* Hover and active states for buttons */
+button:hover {
+    background-color: #555; /* Slightly lighter background */
+}
+button:active {
+    background-color: #666; /* Even lighter background */
+}
+
+/* Textarea-specific styling */
+textarea {
+    height: 200px; /* Fixed height */
+    resize: vertical; /* Allow vertical resizing */
+    background-color: #333; /* Dark background */
+    color: #f1f1f1; /* Light text */
+}
+
+/* Command line input styling */
+#command-line {
+    width: 100%; /* Full width */
+    padding: 10px; /* Inner padding */
+    border: none; /* No border */
+    background-color: #1e1e1e; /* Dark background */
+    color: #fff; /* Light text */
+    font-family: 'Courier New', monospace; /* Monospace font */
+    font-size: 16px; /* Font size */
+    outline: none; /* Remove default outline */
+    caret-color: #fff; /* White caret (text cursor) */
+}
+
+/* Styling for the output area */
+#output-area {
+    margin-bottom: 10px; /* Space below the output */
+    white-space: pre-wrap; /* Preserve whitespace */
+    color: #0aff0a; /* Bright green text for terminal output */
+    font-family: 'Courier New', monospace; /* Monospace font */
+    font-size: 14px; /* Font size */
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 300px; /* Limit height */
+}
